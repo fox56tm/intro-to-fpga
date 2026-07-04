@@ -1,0 +1,20 @@
+name: Lint checks
+
+on: [push, pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-lint
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: chipsalliance/verible-linter-action@main
+        with:
+          paths: |
+            ./src
+          exclude_paths: |
+            ./src/11-bsram/line_buffers/gowin_sp
+          github_token: ${{ secrets.GITHUB_TOKEN }}

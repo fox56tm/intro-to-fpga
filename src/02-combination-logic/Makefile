@@ -12,7 +12,7 @@ $(MODULES):
 	mkdir -p build
 	$(IVERILOG) $(FLAGS) -s ${@}_tb \
 	 -o build/${@}.out \
-	 exercises/${@}.sv testbenches/${@}_tb.sv
+	 exercises/${@}.sv testbenches_for_exer/${@}_tb.sv
 	$(VVP) build/${@}.out
 
 clean:

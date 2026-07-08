@@ -4,7 +4,7 @@ module peirce_arrow_tb;
  
   const logic [3:0] AParams = 4'b0011;
   const logic [3:0] BParams = 4'b0101; 
-  const logic [3:0] COutExpected = 4'b1110;
+  const logic [3:0] COutExpected = 4'b1000;
 
   peirce_arrow peirce_arr (
       .a(a),

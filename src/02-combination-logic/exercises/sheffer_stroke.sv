@@ -3,5 +3,5 @@ module sheffer_stroke(
     input logic b,
     output logic c_out
 );
-    assign c_out = ~a & ~b;
+    assign c_out = ~a | ~b;
 endmodule

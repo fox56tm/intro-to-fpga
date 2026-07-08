@@ -4,7 +4,7 @@ module sheffer_stroke_tb;
  
   const logic [3:0] AParams = 4'b0011;
   const logic [3:0] BParams = 4'b0101; 
-  const logic [3:0] COutExpected = 4'b1000;
+  const logic [3:0] COutExpected = 4'b1110;
 
   sheffer_stroke sheff_stroke (
       .a(a),

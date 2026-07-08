@@ -1,0 +1,23 @@
+name: build and run testbenches
+
+on: [push, pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-tests
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hdl/iverilog:latest
+    steps:
+      - name: Set up repositoty
+        uses: actions/checkout@v7
+      - name: Install make
+        run: |
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends make
+      - name: Build and start testbenches
+        run: |
+          make ci;

@@ -1,19 +1,19 @@
 IVERILOG ?= iverilog
 VVP ?= vvp
-SOURCES = *.sv
-TOPMODULE = adder_logic_1_bit_tb
-IVERILOG_FLAGS = -g2012
+FLAGS = -g2012
 
-all: tests
+MODULES = implication not_implication peirce_arrow sheffer_stroke
 
-build:
+.PHONY: all clean $(MODULES)
+
+all: $(MODULES)
+
+$(MODULES):
 	mkdir -p build
-	$(IVERILOG) $(IVERILOG_FLAGS) -s $(TOPMODULE) -o build/$(TOPMODULE) $(SOURCES)
-
-tests: build
-	$(VVP) build/$(TOPMODULE)
+	$(IVERILOG) $(FLAGS) -s ${@}_tb \
+	 -o build/${@}.out \
+	 exercises/${@}.sv testbenches/${@}_tb.sv
+	$(VVP) build/${@}.out
 
 clean:
-	$(RM) -R build
-
-.PHONY: all tests clean build
+	rm -rf build

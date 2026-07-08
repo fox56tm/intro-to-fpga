@@ -25,7 +25,7 @@ module peirce_arrow_tb;
       else begin
         $display({"error:",
                   "\non that parameters: a = %b, b = %b, c_out = %b",
-                  "\nc_out expect = %b"}, a, b, sum, c_out, COutExpected[i]);
+                  "\nc_out expect = %b"}, a, b, c_out, COutExpected[i]);
         $fatal;  
       end
     end

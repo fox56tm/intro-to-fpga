@@ -1,4 +1,4 @@
-module peirce_arr_implic (
+module peirce_arrow_implic (
     input logic a,
     input logic b, 
     output logic c_out
@@ -6,7 +6,7 @@ module peirce_arr_implic (
     logic temp1, temp2;  
 
     peirce_arrow pa1 ( // temp1 = ~a, temp2 = (a & ~b), =>
-        .a(a),           // => temp3 = ~temp2 & ~temp2 =
+        .a(a),           // => c_out = ~temp2 & ~temp2 =
         .b(b),           // = (~a | b) & (~a | b)
         .c_out(temp1)
     );

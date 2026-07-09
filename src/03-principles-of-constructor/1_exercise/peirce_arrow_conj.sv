@@ -1,4 +1,4 @@
-module peirce_arr_disj (
+module peirce_arrow_conj (
     input logic a,
     input logic b, 
     output logic c_out
@@ -7,12 +7,12 @@ module peirce_arr_disj (
 
     peirce_arrow p_arr1 (
         .a(a),
-        .b(b),
+        .b(a),
         .c_out(not_a)
     );
 
     peirce_arrow p_arr2 (
-        .a(a),
+        .a(b),
         .b(b),
         .c_out(not_b)
     );

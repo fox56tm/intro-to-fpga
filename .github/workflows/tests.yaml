@@ -20,4 +20,4 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends make
       - name: Build and start testbenches
         run: |
-          make ci;
+          make ci

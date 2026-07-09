@@ -1,0 +1,28 @@
+[options]
+mode bmc
+depth 1
+
+[engines]
+smtbmc z3
+
+[script]
+read -sv -formal peirce_arrow_implic.sv
+read -sv -formal sheffer_stroke_implic.sv
+read -sv -formal peirce_arrow_conj.sv
+read -sv -formal sheffer_stroke_conj.sv
+read -sv -formal peirce_arrow_disj.sv
+read -sv -formal sheffer_stroke_disj.sv
+read -sv -formal peirce_arrow.sv
+read -sv -formal sheffer_stroke.sv
+prep -top all_ops_fv
+
+[files]
+1_exersise/peirce_arrow_implic.sv
+2_exersise/sheffer_stroke_implic.sv
+1_exersise/peirce_arrow_conj.sv
+2_exersise/sheffer_stroke_conj.sv
+1_exersise/peirce_arrow_disj.sv
+2_exersise/sheffer_stroke_disj.sv
+../02-combination-logic/exercises/peirce_arrow.sv
+../02-combination-logic/exercises/sheffer_stroke.sv
+all_ops_fv

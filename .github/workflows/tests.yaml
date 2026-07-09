@@ -14,12 +14,10 @@ jobs:
     steps:
       - name: Set up repository
         uses: actions/checkout@v7
-
-      - name: Install dependencies (make, sby, z3, yosys)
+      - name: Install dependencies
         run: |
           apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends make symbiyosys z3 yosys
-
+          DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends make yosys yosys-smtbmc z3
       - name: Build and start testbenches
         run: |
           make ci

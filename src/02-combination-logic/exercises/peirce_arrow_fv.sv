@@ -4,12 +4,13 @@ module peirce_arrow(
     output logic c_out
 );
     assign c_out = ~a & ~b;
-endmodule
 
-`ifdef FORMAL
-  always @* begin
-    assert (c_out == ~(a | b));
-    cover (a == 1'b0 && b == 1'b0);
-    cover (a == 1'b1 || b == 1'b1);
-  end
-`endif
+  `ifdef FORMAL
+    always @* begin
+      assert (c_out == ~(a | b));
+      cover (a == 1'b0 && b == 1'b0);
+      cover (a == 1'b1 || b == 1'b1);
+    end
+  `endif
+
+endmodule

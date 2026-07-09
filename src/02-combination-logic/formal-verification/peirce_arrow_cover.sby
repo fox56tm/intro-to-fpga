@@ -1,0 +1,13 @@
+[options]
+mode cover
+depth 1
+
+[engines]
+smtbmc z3
+
+[script]
+read -sv -formal peirce_arrow.sv
+prep -top peirce_arrow
+
+[files]
+exercises/peirce_arrow.sv

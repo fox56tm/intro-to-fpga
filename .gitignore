@@ -1,3 +1,9 @@
 build/
 .envrc
 *.svg
+#SBY ignore
+*_bmc/
+*_cover/
+*_prove/
+*.vcd
+*.out

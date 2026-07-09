@@ -12,12 +12,14 @@ jobs:
     container:
       image: ghcr.io/hdl/iverilog:latest
     steps:
-      - name: Set up repositoty
+      - name: Set up repository
         uses: actions/checkout@v7
-      - name: Install make
+
+      - name: Install dependencies (make, sby, z3, yosys)
         run: |
           apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends make
+          DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends make symbiyosys z3 yosys
+
       - name: Build and start testbenches
         run: |
-          make ci;
+          make ci

@@ -8,7 +8,7 @@ SBY_TARGETS = peirce_arrow_bmc peirce_arrow_cover
 
 .PHONY: all clean $(MODULES) $(SBY_TARGETS)
 
-all: $(MODULES) formal
+all: $(MODULES)
 
 $(MODULES):
 	mkdir -p build

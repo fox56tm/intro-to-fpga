@@ -5,19 +5,12 @@ module k_int_adder #(
         output int sum
     );
         int temp_sum[K-1];
-        adder_multibits_int adder_first(
-            .a(digits[0]),
-            .b(digits[1]),
-            .sum(temp_sum[0])
-        );
+        assign temp_sum[0] = digits[0] + digits[1];
         genvar i;
         generate
         for(i = 1; i < K - 1; i++)
-            adder_multibits_int adder_new(
-                .a(temp_sum[i-1]),
-                .b(digits[i+1]),
-                .sum(temp_sum[i])
-            );
+            assign temp_sum[i] = temp_sum[i-1] + digits[i+1];
         endgenerate
+        
         assign sum = temp_sum[K-2];
 endmodule

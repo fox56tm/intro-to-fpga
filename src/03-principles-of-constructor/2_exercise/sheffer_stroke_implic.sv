@@ -10,7 +10,6 @@ module sheffer_stroke_implic (
         .b(b),
         .c_out(not_b)
     );
-
     sheffer_stroke stroke2(
         .a(a),
         .b(not_b),

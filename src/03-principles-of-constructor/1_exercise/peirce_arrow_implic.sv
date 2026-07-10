@@ -10,13 +10,11 @@ module peirce_arrow_implic (
         .b(b),           // = (~a | b) & (~a | b)
         .c_out(temp1)
     );
-
     peirce_arrow pa2 (
         .a(temp1),
         .b(b),
         .c_out(temp2)
     );
-
     peirce_arrow pa3 ( 
     .a(temp2),
     .b(temp2),

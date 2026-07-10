@@ -10,7 +10,6 @@ module peirce_arrow_disj (
         .b(b),
         .c_out(temp1)
     );
-
     peirce_arrow p_arr2 (
         .a(temp1),
         .b(temp1),

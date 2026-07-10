@@ -10,13 +10,11 @@ module peirce_arrow_conj (
         .b(a),
         .c_out(not_a)
     );
-
     peirce_arrow p_arr2 (
         .a(b),
         .b(b),
         .c_out(not_b)
     );
-
     peirce_arrow p_arr3 (
         .a(not_a),
         .b(not_b),

@@ -7,3 +7,4 @@ build/
 *_prove/
 *.vcd
 *.out
+peirce_and_sheffer/

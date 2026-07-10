@@ -25,6 +25,7 @@ module test_all_tb;
             assert(peirce_implic_out === (!a || b)) else $error("peirce arrow implication failed");
             assert(peirce_disj_out === (a || b)) else $error("peirce arrow disjunction failed");
         end
+        $display("=== All testbenches was finished ===");
         $finish;
     end
 

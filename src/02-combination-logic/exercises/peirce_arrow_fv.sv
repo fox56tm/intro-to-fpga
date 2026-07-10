@@ -1,4 +1,4 @@
-module peirce_arrow(
+module peirce_arrow_fv(
     input logic a,
     input logic b, 
     output logic c_out

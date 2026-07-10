@@ -6,8 +6,8 @@ depth 1
 smtbmc z3
 
 [script]
-read -sv -formal peirce_arrow.sv
-prep -top peirce_arrow
+read -sv -formal peirce_arrow_fv.sv
+prep -top peirce_arrow_fv
 
 [files]
-exercises/peirce_arrow.sv
+exercises/peirce_arrow_fv.sv

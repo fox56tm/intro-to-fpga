@@ -54,8 +54,10 @@ module float_adder(
           sign_sum = sign2;
           mantissa_sum = mantissa2 - mantissa1;
         end
-        if (mantissa_sum == 0) max_exp = '0;
-
+        if (mantissa_sum == 0) begin
+          max_exp = '0;
+          sign_sum = 1'b0;
+        end
         else begin 
           for(int i = 23; i >= 0; i--) begin
             if(mantissa_sum[i] == 1'b1) begin

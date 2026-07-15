@@ -1,4 +1,4 @@
-module sheffer_stroke_reduce #(
+module sheffer_stroke_reduce_fv #(
   parameter int COUNT_OF_BITS = 4
   )(
     input logic [COUNT_OF_BITS-1:0] vector,
@@ -14,7 +14,7 @@ module sheffer_stroke_reduce #(
     assign bit_in = temp_vector[0];
     assign result = acc;
 
-    sheffer_stroke stroke(
+    sheffer_stroke stroke (
       .a(acc),
       .b(bit_in),
       .c_out(stroke_out)
@@ -34,4 +34,28 @@ module sheffer_stroke_reduce #(
         end
       end
     end
+    
+    `ifdef FORMAL
+      logic past_valid = 1'b0;
+      always_ff @(posedge clk) begin
+        past_valid <= 1'b1;
+      end
+      
+      initial begin
+        assume(rst);
+      end
+
+      always @(posedge clk) begin
+        if (past_valid && $past(rst)) begin
+          assert (acc == '1 && temp_vector == $past(vector) && bit_counter =='0);
+        end
+      end
+
+      always @(posedge clk) begin
+        if (past_valid && !rst && !$past(rst)) begin
+          cover (!rst && bit_counter >= COUNT_OF_BITS);
+        end
+      end
+    `endif
+
 endmodule

@@ -1,0 +1,15 @@
+[options]
+mode cover
+depth 20
+
+[engines]
+smtbmc z3
+
+[script]
+read -sv -formal sheffer_stroke_reduce_fv.sv
+read -sv -formal sheffer_stroke.sv
+prep -top sheffer_stroke_reduce_fv
+
+[files]
+../02-combination-logic/exercises/sheffer_stroke.sv
+4_exercise/sheffer_stroke_reduce_fv.sv

@@ -8,3 +8,4 @@ build/
 *.vcd
 *.out
 peirce_and_sheffer/
+sheffer_stroke_reduce_fv/

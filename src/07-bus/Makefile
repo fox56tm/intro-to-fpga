@@ -6,6 +6,9 @@ FLAGS = -g2012
 
 all: | build
 	$(IVERILOG) $(FLAGS) -o build/test1.out 1_exercise/*.sv && $(VVP) build/test1.out
+	$(IVERILOG) $(FLAGS) -o build/build2 2_exercise/*.sv
+	$(IVERILOG) $(FLAGS) -o build/build3 3_exercise/*.sv
+	
 
 build:
 	mkdir -p build

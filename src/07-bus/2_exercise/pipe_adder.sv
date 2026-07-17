@@ -37,6 +37,7 @@ module pipe_adder(
       if(~s_valid_1 && ~s_valid_2) begin
         over_bit <= '0;
       end
+    end
   end
 
     always_comb begin

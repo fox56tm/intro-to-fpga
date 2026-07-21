@@ -1,7 +1,6 @@
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, RisingEdge, FallingEdge
-from cocotb.types import LogicArray
+from cocotb.triggers import ClockCycles, RisingEdge
 import random
 from cocotb.regression import TestFactory
 

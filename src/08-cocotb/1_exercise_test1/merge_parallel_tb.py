@@ -1,7 +1,6 @@
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, RisingEdge
-from cocotb.types import LogicArray
 import random
 from cocotb.regression import TestFactory
 
@@ -15,13 +14,13 @@ class HelperMergeParallel:
         self.res = 0
 
     async def generate_rnd_input(self):
-        self.dut.s_valid_1.value = random.randint(0, 1)
-        self.dut.s_data_1.value = random.randint(0, (2**self.InWidth1)-1)
+        self.dut.s_valid_1.value = random.randint(0,1)
+        self.dut.s_data_1.value = random.randint(0,(2**self.InWidth1)-1)
 
-        self.dut.s_valid_2.value = random.randint(0, 1)
-        self.dut.s_data_2.value = random.randint(0, (2**self.InWidth2)-1)
+        self.dut.s_valid_2.value = random.randint(0,1)
+        self.dut.s_data_2.value = random.randint(0,(2**self.InWidth2)-1)
 
-        self.dut.m_ready.value = random.randint(0, 1)
+        self.dut.m_ready.value = random.randint(0,1)
         await RisingEdge(self.dut.clk)
 
     async def initialize_rst(self):
@@ -32,9 +31,9 @@ class HelperMergeParallel:
     async def setup(self):
         self.dut.s_valid_1.value = 0
         self.dut.s_valid_2.value = 0
-        self.dut.m_ready.value = random.randint(0, 1)
-        self.dut.s_data_1.value = random.randint(0, (2**self.InWidth1) - 1)
-        self.dut.s_data_2.value = random.randint(0, (2**self.InWidth2) - 1)
+        self.dut.m_ready.value = random.randint(0,1)
+        self.dut.s_data_1.value = random.randint(0, (2**self.InWidth1)-1)
+        self.dut.s_data_2.value = random.randint(0, (2**self.InWidth2)-1)
     
     async def my_merge_parallel(self):
         data1 = int(self.dut.s_data_1.value) if (self.dut.s_valid_1.value and self.dut.s_ready_1.value) else 0

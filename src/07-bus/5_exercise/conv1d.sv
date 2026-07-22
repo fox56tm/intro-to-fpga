@@ -59,11 +59,11 @@ module conv1d #(
     else begin
       if(counter < KERNEL_SIZE) begin
         if (w_valid && w_ready) begin
-        weights_in_ker[0] <= weight_in;
-        for(int i = 1; i < KERNEL_SIZE; i++) begin
-          weights_in_ker[i] <= weights_in_ker[i-1];
-        end
-        counter <= counter + 1;
+          weights_in_ker[0] <= weight_in;
+          for(int i = 1; i < KERNEL_SIZE; i++) begin
+            weights_in_ker[i] <= weights_in_ker[i-1];
+          end
+          counter <= counter + 1;
         end
       end
       if (win_ready && win_valid) begin

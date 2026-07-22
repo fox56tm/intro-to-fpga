@@ -49,7 +49,6 @@ class HelperPipeAdder:
         elif not v1 and not v2:
             self.carry = 0
 
-
 async def run_pipe_adder_test(dut, Iter):
     clock = Clock(dut.clk, 10, units="ns")
     helper = HelperPipeAdder(dut)

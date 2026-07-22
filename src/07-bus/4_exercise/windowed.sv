@@ -1,5 +1,5 @@
 module windowed #(
-  parameter int WIN_SIZE = 3
+  parameter int WIN_SIZE = 8
   )(
   input logic clk,
   input logic aresetn,
@@ -15,24 +15,24 @@ module windowed #(
 
   logic [WIN_SIZE-1:0] data_ff;
   logic valid_ff;
-  int f_bit;
+  int count;
   
-  always_ff @(posedge clk or negedge aresetn) begin
-    if(~aresetn) begin
+always_ff @(posedge clk or negedge aresetn) begin
+    if (!aresetn) begin
       data_ff <= '0;
       valid_ff <= '0;
-      f_bit <= 0;
-    end 
-    else begin
-      if(s_valid && s_ready) begin
-          data_ff <= {s_data, data_ff[WIN_SIZE-1:1]};
-          if(f_bit == (WIN_SIZE-1))
-            valid_ff <= '1;
-          else 
-            f_bit <= f_bit + 1;
-      end
-      else if(m_ready && m_valid) begin
+      count <= 0;
+    end else begin
+      if (m_valid && m_ready) begin
         valid_ff <= '0;
+      end
+      if (s_valid && s_ready) begin
+        data_ff <= {data_ff[WIN_SIZE-2:0], s_data};
+        if (count == WIN_SIZE - 1) begin
+          valid_ff <= '1;
+        end else begin
+          count <= count + 1;
+        end
       end
     end
   end

@@ -1,6 +1,6 @@
 module merge_parallel #(
-    parameter int IN_WIDTH_1 = 3,
-    parameter int IN_WIDTH_2 = 8,
+    parameter int IN_WIDTH_1 = 16,
+    parameter int IN_WIDTH_2 = 16,
     parameter int OUT_WIDTH  = IN_WIDTH_1 + IN_WIDTH_2
 ) (
     input logic clk,

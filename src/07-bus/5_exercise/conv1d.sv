@@ -18,9 +18,9 @@ module conv1d #(
 
   );
 
-  logic [31:0] weights_in_ker [KERNEL_SIZE];
-  logic [7:0] bytes_arr [KERNEL_SIZE];
-  logic [7:0] curr_byte;
+  logic [31:0] weights_in_ker [KERNEL_SIZE]; 
+  byte unsigned bytes_arr [KERNEL_SIZE];
+  byte unsigned curr_byte;
   logic win_ready; // for windowed
   logic win_valid;
   logic valid_ff; // for m_valid
@@ -48,33 +48,43 @@ module conv1d #(
   );
 
   always_ff @(posedge clk or negedge aresetn) begin 
-    if(~aresetn) begin
+    if (~aresetn) begin
       valid_ff <= '0;
       counter <= 0;
+      for (int i = 0; i < KERNEL_SIZE; i++) begin
+        weights_in_ker[i] <= '0;
+        bytes_arr[i] <= '0;
+      end
     end
     else begin
       if(counter < KERNEL_SIZE) begin
-        if(w_ready && w_valid) begin
-          weights_in_ker <= {weight_in, weights_in_ker[KERNEL_SIZE-1:1]};
+        if (w_valid && w_ready) begin
+          weights_in_ker[0] <= weight_in;
+          for(int i = 1; i < KERNEL_SIZE; i++) begin
+            weights_in_ker[i] <= weights_in_ker[i-1];
+          end
           counter <= counter + 1;
         end
       end
-      else if(m_ready && m_valid) begin
-        valid_ff <= '0;
+      if (win_ready && win_valid) begin
+        bytes_arr[0] <= curr_byte;
+        for (int i = 1; i < KERNEL_SIZE; i++) begin
+          bytes_arr[i] <= bytes_arr[i-1];
+        end
       end
-      else begin 
+      if (win_ready && win_valid) begin // data's from windowed module are ready
         valid_ff <= '1;
       end
-      if (win_ready && win_valid) begin
-        bytes_arr <= {curr_byte, bytes_arr[KERNEL_SIZE-1:1]};
+      else if (m_ready && m_valid) begin
+        valid_ff <= '0;
       end
     end
   end
 
   always_comb begin
-    m_valid = valid_ff;
-    win_ready = '1;
     w_ready = (counter < KERNEL_SIZE);
+    m_valid = valid_ff;
+    win_ready = (counter == KERNEL_SIZE) && (~valid_ff || m_ready);
   end
 
 endmodule

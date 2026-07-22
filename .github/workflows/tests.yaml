@@ -14,10 +14,11 @@ jobs:
     steps:
       - name: Set up repositoty
         uses: actions/checkout@v7
-      - name: Install make
+      - name: Install dependencies
         run: |
           apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends make
+          DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends make python3-pip python3-dev
+          PIP_BREAK_SYSTEM_PACKAGES=1 pip install cocotb
       - name: Build and start testbenches
         run: |
           make ci

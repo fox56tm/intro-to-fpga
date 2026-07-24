@@ -4,7 +4,6 @@ from cocotb.triggers import ClockCycles, RisingEdge
 from cocotb.regression import TestFactory
 import random
 
-
 class HelperLineBuffer:
 
     def __init__(self, dut, m, image_str_len):
@@ -40,8 +39,8 @@ class HelperLineBuffer:
                 for i in range(0, self.m):
                     row = self.buffer[(sel_now + i + 1) % (self.m + 1)]
                     for j in range(0, self.image_str_len):
-                        flat_idx = i * self.image_str_len + j
-                        actual = self.dut.to_conv1d[flat_idx].value.to_unsigned()
+                        idx = i * self.image_str_len + j
+                        actual = self.dut.to_conv1d[idx].value.to_unsigned()
                         assert row[j] == actual, (
                             f"Lane {i} pos {j}: Got {actual}, Expected {row[j]}"
                         )

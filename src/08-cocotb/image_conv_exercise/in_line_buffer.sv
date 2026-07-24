@@ -21,19 +21,23 @@ module in_line_buffer #(
 
   always_ff @(posedge clk or negedge aresetn) begin
     if(~aresetn) begin
-      buffer <= '0;
       valid_ff <= '0;
       str_cnt <= 0;
       pix_cnt <= 1;
+      for (int i = 0; i < M + 1; i++) begin
+        for (int j = 0; j < IMAGE_STR_LEN; j++) begin
+          buffer[i][j] <= '0;
+        end
+      end
     end
     else begin
       if (m_valid && m_ready) begin
         valid_ff <= '0;
       end
       if(s_valid && s_ready) begin
-        buffer[sel][0] <= s_data;
-        for(int i = 1; i < IMAGE_STR_LEN; i++) begin
-          buffer[sel][i] <= buffer[sel][i-1];
+        buffer[sel][IMAGE_STR_LEN-1] <= s_data;
+        for(int i = IMAGE_STR_LEN-1; i > 0; i--) begin
+          buffer[sel][i-1] <= buffer[sel][i];
         end
         if(pix_cnt < IMAGE_STR_LEN) begin
           pix_cnt <= pix_cnt + 1;
@@ -45,7 +49,7 @@ module in_line_buffer #(
           end
         end
         if (str_cnt == M || (str_cnt == M - 1 && pix_cnt == IMAGE_STR_LEN)) begin
-          valid_ff <= '1';
+          valid_ff <= '1;
         end
       end
     end
@@ -54,8 +58,11 @@ module in_line_buffer #(
   always_comb begin
     m_valid = valid_ff;
     s_ready = ~valid_ff || m_ready;
-    for (int i = 0; i < M; i++)
-      to_conv1d[i] = buffer[(sel + i + 1) % (M+1)];
+    for (int i = 0; i < M; i++) begin
+      for (int j = 0; j < IMAGE_STR_LEN; j++) begin
+        to_conv1d[i][j] = buffer[(sel + i + 1) % (M+1)][j];
+      end
+    end
   end
 
 endmodule

@@ -1,5 +1,5 @@
 module windowed #(
-  parameter int WIN_SIZE = 8
+  parameter int WIN_SIZE = 3
   )(
   input logic clk,
   input logic aresetn,
@@ -17,7 +17,7 @@ module windowed #(
   logic valid_ff;
   int count;
   
-always_ff @(posedge clk or negedge aresetn) begin
+  always_ff @(posedge clk or negedge aresetn) begin
     if (!aresetn) begin
       data_ff <= '0;
       valid_ff <= '0;
@@ -37,10 +37,10 @@ always_ff @(posedge clk or negedge aresetn) begin
     end
   end
 
-    always_comb begin
-      m_data = data_ff;
-      m_valid = valid_ff;
-      s_ready = ~valid_ff || m_ready;
-    end
+  always_comb begin
+    m_data = data_ff;
+    m_valid = valid_ff;
+    s_ready = ~valid_ff || m_ready;
+  end
 
 endmodule

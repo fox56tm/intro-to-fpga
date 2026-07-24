@@ -11,7 +11,7 @@ def float_to_uint32(val: float) -> int:
 def uint32_to_float(val: int) -> float:
     return struct.unpack('<f', struct.pack('<I', val))[0]
 
-class HelperImageConvValid:
+class HelperImageConv:
 
     def __init__(self, dut, m, kernel_size, image_str_len):
         self.dut = dut
@@ -26,22 +26,14 @@ class HelperImageConvValid:
             [random.randint(0, 255) for _ in range(image_str_len)]
             for _ in range(m)
         ]
-        self.expected_outputs = self._calc_expected()
-
-    def _calc_expected(self):
-        outputs = []
+        self.expected = []
         for col in range(self.out_str_len):
             total_sum = 0
             for row in range(self.m):
                 window = self.input_image[row][col : col + self.kernel_size]
-                row_conv = 0
-                for i in range(self.kernel_size):
-                    prod = self.weights[i] * window[i]
-                    prod_int = min(int(prod), 255)
-                    row_conv += prod_int
+                row_conv = sum(min(int(self.weights[i] * window[i]), 255) for i in range(self.kernel_size))
                 total_sum += min(row_conv, 255)
-            outputs.append(min(total_sum, 255))
-        return outputs
+            self.expected.append(min(total_sum, 255))
 
     async def initialize_rst(self):
         self.dut.aresetn.value = 0
@@ -54,7 +46,7 @@ class HelperImageConvValid:
         self.dut.s_valid.value = 0
         self.dut.w_valid.value = 0
         self.dut.weight_in.value = float_to_uint32(0.0)
-        self.dut.m_ready.value = 1
+        self.dut.m_ready.value = 0
 
     async def load_weights(self):
         for w in self.weights_raw:
@@ -66,44 +58,46 @@ class HelperImageConvValid:
         await RisingEdge(self.dut.clk)
         self.dut.w_valid.value = 0
 
-    async def drive_input(self):
+    async def generate_rnd_input(self):
         for row in range(self.m):
             for col in range(self.image_str_len):
                 await RisingEdge(self.dut.clk)
                 self.dut.sel.value = row
                 self.dut.s_data.value = self.input_image[row][col]
                 self.dut.s_valid.value = 1
+                self.dut.m_ready.value = random.randint(0, 1)
                 while not self.dut.s_ready.value:
                     await RisingEdge(self.dut.clk)
         await RisingEdge(self.dut.clk)
         self.dut.s_valid.value = 0
+        self.dut.m_ready.value = 1 
 
     async def check_output(self):
         out_idx = 0
         while out_idx < self.out_str_len:
             await RisingEdge(self.dut.clk)
-            assert ReadOnly()
-            if self.dut.m_valid.value == 1 and self.dut.m_ready.value == 1:
-                expected = self.expected_outputs[out_idx]
+            await ReadOnly()
+            if self.dut.m_valid.value and self.dut.m_ready.value:
+                expected = self.expected[out_idx]
                 actual = self.dut.m_data.value.integer
                 assert actual == expected, (
                     f"Pos {out_idx}: Got {actual}, Expected {expected}"
                 )
                 out_idx += 1
 
-async def run_image_conv_valid_test(dut, m, kernel_size, image_str_len):
+async def run_image_conv_test(dut, m, kernel_size, image_str_len):
     cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
-    helper = HelperImageConvValid(dut, m, kernel_size, image_str_len)
+    helper = HelperImageConv(dut, m, kernel_size, image_str_len)
 
     helper.setup()
     await helper.initialize_rst()
-    await RisingEdge(dut.clk)
-
     await helper.load_weights()
-    cocotb.start_soon(helper.drive_input())
-    await helper.check_output()
+    cocotb.start_soon(helper.check_output())
+    cocotb.start_soon(helper.generate_rnd_input())
 
-factory = TestFactory(test_function=run_image_conv_valid_test)
+    await ClockCycles(dut.clk, 1000)
+
+factory = TestFactory(test_function=run_image_conv_test)
 factory.add_option("m", [3])
 factory.add_option("kernel_size", [3])
 factory.add_option("image_str_len", [20])

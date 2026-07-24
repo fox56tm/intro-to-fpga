@@ -1,6 +1,6 @@
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, RisingEdge, ReadOnly
+from cocotb.triggers import ClockCycles, RisingEdge, FallingEdge, ReadOnly
 from cocotb.regression import TestFactory
 import random
 import struct
@@ -31,8 +31,8 @@ class HelperImageConv:
             total_sum = 0
             for row in range(self.m):
                 window = self.input_image[row][col : col + self.kernel_size]
-                row_conv = sum(min(int(self.weights[i] * window[i]), 255) for i in range(self.kernel_size))
-                total_sum += min(row_conv, 255)
+                row_conv = sum(int(self.weights[i] * window[i]) for i in range(self.kernel_size))
+                total_sum += row_conv
             self.expected.append(min(total_sum, 255))
 
     async def initialize_rst(self):
@@ -50,27 +50,31 @@ class HelperImageConv:
 
     async def load_weights(self):
         for w in self.weights_raw:
-            await RisingEdge(self.dut.clk)
             self.dut.w_valid.value = 1
             self.dut.weight_in.value = float_to_uint32(w)
-            while not self.dut.w_ready.value:
+            while True:
                 await RisingEdge(self.dut.clk)
-        await RisingEdge(self.dut.clk)
+                await ReadOnly()
+                if self.dut.w_valid.value and self.dut.w_ready.value:
+                    break
+            await FallingEdge(self.dut.clk)
         self.dut.w_valid.value = 0
 
     async def generate_rnd_input(self):
         for row in range(self.m):
             for col in range(self.image_str_len):
-                await RisingEdge(self.dut.clk)
                 self.dut.sel.value = row
                 self.dut.s_data.value = self.input_image[row][col]
                 self.dut.s_valid.value = 1
                 self.dut.m_ready.value = random.randint(0, 1)
-                while not self.dut.s_ready.value:
+                while True:
                     await RisingEdge(self.dut.clk)
-        await RisingEdge(self.dut.clk)
+                    await ReadOnly()
+                    if self.dut.s_valid.value and self.dut.s_ready.value:
+                        break
+                await FallingEdge(self.dut.clk)
         self.dut.s_valid.value = 0
-        self.dut.m_ready.value = 1 
+        self.dut.m_ready.value = 1
 
     async def check_output(self):
         out_idx = 0
@@ -79,7 +83,7 @@ class HelperImageConv:
             await ReadOnly()
             if self.dut.m_valid.value and self.dut.m_ready.value:
                 expected = self.expected[out_idx]
-                actual = self.dut.m_data.value.integer
+                actual = self.dut.m_data.value.to_unsigned()
                 assert actual == expected, (
                     f"Pos {out_idx}: Got {actual}, Expected {expected}"
                 )

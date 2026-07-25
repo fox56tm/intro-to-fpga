@@ -8,7 +8,7 @@ module scalar_product #(
 
   byte unsigned temp_storage[VECTORS_SIZE];
   genvar i;
-  generate;
+  generate
     for(i = 0; i < VECTORS_SIZE; i++)begin
       float_mult_byte_modified float_mult(
         .float_in(float[i]),

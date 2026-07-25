@@ -20,6 +20,7 @@ module conv1d_bytes #(
 
   logic [31:0] weights_in_ker [KERNEL_SIZE]; 
   byte unsigned win_out [KERNEL_SIZE];
+  logic [KERNEL_SIZE-1:0][7:0] win_out_packed; // packed for m_data 
   logic win_ready; // for windowed
   logic win_valid;
   logic valid_ff; // for m_valid
@@ -35,8 +36,15 @@ module conv1d_bytes #(
     .s_valid(s_valid),
     .m_ready(win_ready),
     .m_valid(win_valid),
-    .m_data(win_out)
+    .m_data(win_out_packed)
   );
+
+  genvar g;
+  generate
+    for (g = 0; g < KERNEL_SIZE; g++) begin
+      assign win_out[g] = win_out_packed[g];
+    end
+  endgenerate
 
   scalar_product #(
     .VECTORS_SIZE(KERNEL_SIZE)

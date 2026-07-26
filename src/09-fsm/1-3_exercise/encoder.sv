@@ -14,10 +14,9 @@ module encoder (
     A = 8'h41,
     T = 8'h54,
     G = 8'h47,
-    C = 8'43
+    C = 8'h43
   } chars;
 
-  chars char_in;
   logic valid_ff;
   logic [2:0] code_out;
   logic [1:0] len;
@@ -27,7 +26,7 @@ module encoder (
         A: begin
             code_out = 3'b000; 
             len = 2'd1;
-            end
+        end
         T: begin
             code_out = 3'b100;
             len = 2'd2;
@@ -61,6 +60,7 @@ module encoder (
         buffer <= code_out;
         bit_cnt <= len;
         valid_ff <= '1;
+      end
     else if(m_ready && valid_ff) begin
           buffer <= (buffer << 1);
           bit_cnt <= bit_cnt - 1;
@@ -69,7 +69,6 @@ module encoder (
           end
         end
       end
-    end
   end
 
   always_comb begin

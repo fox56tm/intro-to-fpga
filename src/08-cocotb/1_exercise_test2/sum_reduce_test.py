@@ -1,11 +1,12 @@
+import random
+
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, RisingEdge
-import random
 from cocotb.regression import TestFactory
+from cocotb.triggers import ClockCycles, RisingEdge
+
 
 class HelperSumReduce:
-
     def __init__(self, dut, count_of_bits):
         self.dut = dut
         self.count_of_bits = count_of_bits
@@ -18,8 +19,8 @@ class HelperSumReduce:
         self.dut.rst.value = 1
         await ClockCycles(self.dut.clk, 2)
         self.dut.rst.value = 0
-    
-    def my_sum_reduce(self,num):
+
+    def my_sum_reduce(self, num):
         self.sum = (self.acc + num) % (2**self.count_of_bits)
 
     def update(self):
@@ -41,8 +42,11 @@ async def run_sum_reduce_test(dut, Iter, count_of_bits):
         dut.num.value = rnd_val
         helper.my_sum_reduce(rnd_val)
         await RisingEdge(dut.clk)
-        assert dut.sum.value.integer == helper.sum, f"ERROR {dut.sum.value.integer}, expec: {helper.sum}"
+        assert dut.sum.value.integer == helper.sum, (
+            f"ERROR {dut.sum.value.integer}, expec: {helper.sum}"
+        )
         helper.update()
+
 
 factory = TestFactory(test_function=run_sum_reduce_test)
 factory.add_option("Iter", [1000])

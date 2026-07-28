@@ -1,10 +1,12 @@
-import cocotb
-from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, RisingEdge, ReadOnly
-from cocotb.regression import TestFactory
 import random
 
-ALPHABET = [ord('A'), ord('T'), ord('G'), ord('C')]
+import cocotb
+from cocotb.clock import Clock
+from cocotb.regression import TestFactory
+from cocotb.triggers import ClockCycles, ReadOnly, RisingEdge
+
+ALPHABET = [ord("A"), ord("T"), ord("G"), ord("C")]
+
 
 class HelperCodec:
     def __init__(self, dut):
@@ -31,7 +33,7 @@ class HelperCodec:
     async def my_encoder(self):
         while True:
             await RisingEdge(self.dut.clk)
-            if(self.dut.s_ready.value and self.dut.s_valid.value):
+            if self.dut.s_ready.value and self.dut.s_valid.value:
                 self.expected.append(self.dut.byte_in.value.integer)
 
     async def check_output(self):
@@ -41,7 +43,10 @@ class HelperCodec:
             if self.dut.m_valid.value == 1 and self.dut.m_ready.value == 1:
                 expected_val = self.expected.pop(0)
                 actual = self.dut.char_out.value.integer
-                assert actual == expected_val, f"Error! Got: {actual}, Expected: {expected_val}"
+                assert actual == expected_val, (
+                    f"Error! Got: {actual}, Expected: {expected_val}"
+                )
+
 
 async def run_codec_test(dut):
     cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())
@@ -55,6 +60,7 @@ async def run_codec_test(dut):
     cocotb.start_soon(helper.my_encoder())
     cocotb.start_soon(helper.check_output())
     await ClockCycles(dut.clk, 1000)
+
 
 factory = TestFactory(test_function=run_codec_test)
 factory.generate_tests()

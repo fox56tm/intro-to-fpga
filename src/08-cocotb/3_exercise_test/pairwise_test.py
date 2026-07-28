@@ -1,10 +1,11 @@
+import random
+
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, RisingEdge
-import random
+
 
 class HelperPairwise:
-
     def __init__(self, dut):
         self.dut = dut
         self.prev_bit = None
@@ -12,9 +13,9 @@ class HelperPairwise:
 
     async def generate_rnd_input(self):
         while True:
-            self.dut.s_valid.value = random.randint(0,1)
-            self.dut.s_data.value = random.randint(0,1)
-            self.dut.m_ready.value = random.randint(0,1)
+            self.dut.s_valid.value = random.randint(0, 1)
+            self.dut.s_data.value = random.randint(0, 1)
+            self.dut.m_ready.value = random.randint(0, 1)
             await RisingEdge(self.dut.clk)
 
     async def initialize_rst(self):
@@ -26,7 +27,7 @@ class HelperPairwise:
         self.dut.s_valid.value = 0
         self.dut.s_data.value = 0
         self.dut.m_ready.value = 0
-    
+
     async def my_pairwise(self):
         while True:
             await RisingEdge(self.dut.clk)
@@ -44,7 +45,10 @@ class HelperPairwise:
                 assert len(self.expected) > 0, "Incorrect flag logic"
                 expected_val = self.expected.pop(0)
                 actual = self.dut.m_data.value.integer
-                assert actual == expected_val, f"Error! Got: {actual}, Expected: {expected_val}"
+                assert actual == expected_val, (
+                    f"Error! Got: {actual}, Expected: {expected_val}"
+                )
+
 
 @cocotb.test()
 async def run_pairwise_test(dut):

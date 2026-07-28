@@ -1,11 +1,12 @@
+import random
+
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, RisingEdge, FallingEdge
-import random
 from cocotb.regression import TestFactory
+from cocotb.triggers import ClockCycles, FallingEdge, RisingEdge
+
 
 class HelperPipeAdder:
-
     def __init__(self, dut):
         self.dut = dut
         self.carry = 0
@@ -24,13 +25,13 @@ class HelperPipeAdder:
         self.dut.m_ready.value = 0
 
     def generate_rnd_input(self):
-        self.dut.s_valid_1.value = random.randint(0,1)
-        self.dut.s_data_1.value = random.randint(0,1)
+        self.dut.s_valid_1.value = random.randint(0, 1)
+        self.dut.s_data_1.value = random.randint(0, 1)
 
-        self.dut.s_valid_2.value = random.randint(0,1)
-        self.dut.s_data_2.value = random.randint(0,1)
+        self.dut.s_valid_2.value = random.randint(0, 1)
+        self.dut.s_data_2.value = random.randint(0, 1)
 
-        self.dut.m_ready.value = random.randint(0,1)
+        self.dut.m_ready.value = random.randint(0, 1)
 
     def my_pipe_adder(self):
         v1 = int(self.dut.s_valid_1.value)
@@ -41,7 +42,7 @@ class HelperPipeAdder:
         if (v1 and r1) and (v2 and r2):
             d1 = int(self.dut.s_data_1.value)
             d2 = int(self.dut.s_data_2.value)
-            
+
             total = d1 + d2 + self.carry
             self.carry = total // 2
             bit_out = total % 2
@@ -49,11 +50,12 @@ class HelperPipeAdder:
         elif not v1 and not v2:
             self.carry = 0
 
+
 async def run_pipe_adder_test(dut, Iter):
     clock = Clock(dut.clk, 10, units="ns")
     helper = HelperPipeAdder(dut)
     cocotb.start_soon(clock.start(start_high=False))
-    
+
     helper.setup()
     await helper.initialize_rst()
 
@@ -65,8 +67,11 @@ async def run_pipe_adder_test(dut, Iter):
 
         if dut.m_valid.value and dut.m_ready.value:
             expected = helper.exp_vals.pop(0)
-            assert dut.m_data.value == expected, f"ERROR {dut.m_data.value}, expec: {expected}"
-        
+            assert dut.m_data.value == expected, (
+                f"ERROR {dut.m_data.value}, expec: {expected}"
+            )
+
+
 factory = TestFactory(test_function=run_pipe_adder_test)
 factory.add_option("Iter", [1000])
 factory.generate_tests()

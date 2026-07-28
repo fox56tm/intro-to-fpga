@@ -11,10 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: chipsalliance/verible-linter-action@main
+      - name: SystemVerilog lint
+        uses: chipsalliance/verible-linter-action@main
         with:
           paths: |
             ./src
           exclude_paths: |
             ./src/11-bsram/line_buffers/gowin_sp
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Install dependencies
+        run: uv sync
+      - name: Python format and lint
+        run: |
+          uv run ruff check .
+          uv run ruff format . --check

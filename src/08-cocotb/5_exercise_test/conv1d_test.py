@@ -1,18 +1,21 @@
-import cocotb
-from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, RisingEdge, FallingEdge, ReadOnly
-from cocotb.regression import TestFactory
 import random
 import struct
 
+import cocotb
+from cocotb.clock import Clock
+from cocotb.regression import TestFactory
+from cocotb.triggers import ClockCycles, FallingEdge, ReadOnly, RisingEdge
+
+
 def float_to_uint32(val: float) -> int:
-    return struct.unpack('<I', struct.pack('<f', val))[0]
+    return struct.unpack("<I", struct.pack("<f", val))[0]
+
 
 def uint32_to_float(val: int) -> float:
-    return struct.unpack('<f', struct.pack('<I', val))[0]
+    return struct.unpack("<f", struct.pack("<I", val))[0]
+
 
 class HelperConv1d:
-
     def __init__(self, dut, kernel_size):
         self.dut = dut
         self.kernel_size = kernel_size
@@ -38,7 +41,9 @@ class HelperConv1d:
                     uint32_to_float(int(self.dut.weights_in_ker[i].value))
                     for i in range(self.kernel_size)
                 ]
-                bytes_ = [int(self.dut.bytes_arr[i].value) for i in range(self.kernel_size)]
+                bytes_ = [
+                    int(self.dut.bytes_arr[i].value) for i in range(self.kernel_size)
+                ]
 
                 total = 0
                 for i in range(self.kernel_size):
@@ -47,7 +52,9 @@ class HelperConv1d:
                 expected_val = min(total, 255)
 
                 actual = self.dut.m_data.value.to_unsigned()
-                assert actual == expected_val, f"Error! Got: {actual}, Expected: {expected_val}"
+                assert actual == expected_val, (
+                    f"Error! Got: {actual}, Expected: {expected_val}"
+                )
 
     async def generate_rnd_iput(self):
         while True:
@@ -58,6 +65,7 @@ class HelperConv1d:
             self.dut.s_data.value = random.randint(0, 1)
             self.dut.s_valid.value = random.randint(0, 1)
             self.dut.m_ready.value = random.randint(0, 1)
+
 
 async def run_conv1d_test(dut, kernel_size):
     cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
@@ -70,6 +78,7 @@ async def run_conv1d_test(dut, kernel_size):
     cocotb.start_soon(helper.check_output())
     cocotb.start_soon(helper.generate_rnd_iput())
     await ClockCycles(dut.clk, 1000)
+
 
 factory = TestFactory(test_function=run_conv1d_test)
 factory.add_option("kernel_size", [3])

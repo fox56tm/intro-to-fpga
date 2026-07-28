@@ -1,16 +1,19 @@
-import cocotb
-from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, RisingEdge
-from cocotb.regression import TestFactory
 import random
 
-class HelperLineBuffer:
+import cocotb
+from cocotb.clock import Clock
+from cocotb.regression import TestFactory
+from cocotb.triggers import ClockCycles, RisingEdge
 
+
+class HelperLineBuffer:
     def __init__(self, dut, m, image_str_len):
         self.dut = dut
         self.m = m
         self.image_str_len = image_str_len
-        self.buffer = [[0 for _ in range(self.image_str_len)] for _ in range(self.m + 1)]
+        self.buffer = [
+            [0 for _ in range(self.image_str_len)] for _ in range(self.m + 1)
+        ]
 
     async def initialize_rst(self):
         self.dut.aresetn.value = 0
@@ -36,9 +39,9 @@ class HelperLineBuffer:
             await RisingEdge(self.dut.clk)
             if self.dut.m_valid.value and self.dut.m_ready.value:
                 sel_now = self.dut.sel.value.to_unsigned()
-                for i in range(0, self.m):
+                for i in range(self.m):
                     row = self.buffer[(sel_now + i + 1) % (self.m + 1)]
-                    for j in range(0, self.image_str_len):
+                    for j in range(self.image_str_len):
                         idx = i * self.image_str_len + j
                         actual = self.dut.to_conv1d[idx].value.to_unsigned()
                         assert row[j] == actual, (
@@ -53,6 +56,7 @@ class HelperLineBuffer:
             self.dut.s_valid.value = random.randint(0, 1)
             self.dut.m_ready.value = random.randint(0, 1)
 
+
 async def run_in_line_buffer_test(dut, m, image_str_len):
     cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
     helper = HelperLineBuffer(dut, m, image_str_len)
@@ -64,6 +68,7 @@ async def run_in_line_buffer_test(dut, m, image_str_len):
     cocotb.start_soon(helper.check_output())
     cocotb.start_soon(helper.generate_rnd_iput())
     await ClockCycles(dut.clk, 1000)
+
 
 factory = TestFactory(test_function=run_in_line_buffer_test)
 factory.add_option("m", [3])

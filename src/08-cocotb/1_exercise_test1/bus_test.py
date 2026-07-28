@@ -1,8 +1,9 @@
+import random
+
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, RisingEdge
 from cocotb.types import LogicArray
-import random
 
 
 class HelperSerialParallel:
@@ -67,6 +68,6 @@ async def bus_test(dut):
         if helper.counter == helper.OutWidth:
             print("+++++DETECTED++++===========================================")
             assert dut.m_valid, f"Incorrect m_valid = {dut.m_valid.value}"
-            assert (
-                LogicArray(helper.res) == dut.m_data.value
-            ), f"m_data = {dut.m_data.value}, res = {LogicArray(helper.res)}"
+            assert LogicArray(helper.res) == dut.m_data.value, (
+                f"m_data = {dut.m_data.value}, res = {LogicArray(helper.res)}"
+            )

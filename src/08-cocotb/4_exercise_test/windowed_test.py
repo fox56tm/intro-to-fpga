@@ -1,8 +1,10 @@
+import random
+
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, RisingEdge
 from cocotb.regression import TestFactory
-import random
+from cocotb.triggers import ClockCycles, RisingEdge
+
 
 class HelperWindowed:
     def __init__(self, dut, win_size):
@@ -27,7 +29,7 @@ class HelperWindowed:
         self.dut.s_valid.value = 0
         self.dut.s_data.value = 0
         self.dut.m_ready.value = 0
-    
+
     async def my_windowed(self):
         while True:
             await RisingEdge(self.dut.clk)
@@ -35,7 +37,7 @@ class HelperWindowed:
                 current_bit = int(self.dut.s_data.value)
                 self.history.append(current_bit)
                 if len(self.history) >= self.win_size:
-                    window = self.history[-self.win_size:]
+                    window = self.history[-self.win_size :]
                     expected_val = 0
                     for bit in window:
                         expected_val = (expected_val << 1) | bit
@@ -48,7 +50,9 @@ class HelperWindowed:
                 assert len(self.expected) > 0, "Incorrect flag logic"
                 expected_val = self.expected.pop(0)
                 actual = self.dut.m_data.value.integer
-                assert actual == expected_val, f"Error! Got: {actual}, Expected: {expected_val}"
+                assert actual == expected_val, (
+                    f"Error! Got: {actual}, Expected: {expected_val}"
+                )
 
 
 async def run_windowed_test(dut, win_size):
@@ -62,7 +66,8 @@ async def run_windowed_test(dut, win_size):
     cocotb.start_soon(helper.generate_rnd_input())
     cocotb.start_soon(helper.my_windowed())
     cocotb.start_soon(helper.check_output())
-    await ClockCycles(dut.clk,1000)
+    await ClockCycles(dut.clk, 1000)
+
 
 factory = TestFactory(test_function=run_windowed_test)
 factory.add_option("win_size", [8])
